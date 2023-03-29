@@ -1,0 +1,38 @@
+{
+  "name": "blog_app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@chakra-ui/icons": "^2.0.17",
+    "@chakra-ui/react": "^2.5.4",
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@notionhq/client": "^2.2.3",
+    "framer-motion": "^10.9.1",
+    "next": "^12.2.5",
+    "next-auth": "^4.20.1",
+    "next-plausible": "^3.7.2",
+    "next-seo": "^5.15.0",
+    "notion-blocks-chakra-ui": "^0.0.15",
+    "notion-to-md": "^2.5.5",
+    "react": "18.1.0",
+    "react-dom": "18.1.0",
+    "react-highlight": "^0.15.0",
+    "react-markdown": "^8.0.6"
+  },
+  "devDependencies": {
+    "@types/node": "17.0.31",
+    "@types/react": "18.0.8",
+    "@types/react-dom": "18.0.3",
+    "@types/react-highlight": "^0.12.5",
+    "eslint": "8.14.0",
+    "eslint-config-next": "12.1.6",
+    "typescript": "4.6.4"
+  }
+}
