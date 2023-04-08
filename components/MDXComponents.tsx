@@ -15,7 +15,7 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
-import React from "react";
+import React, { Children } from "react";
 import Highlight from "react-highlight";
 import { encodeSlug } from "../utils";
 
@@ -44,12 +44,12 @@ const CustomLink = (props: any) => {
   if (isInternalLink) {
     return (
       <NextLink href={href} passHref>
-        <Link color={color[colorMode]} {...props} />
+        <Link {...props} />
       </NextLink>
     );
   }
 
-  return <Link color={color[colorMode]} isExternal {...props} />;
+  return <Link isExternal {...props} />;
 };
 
 const Quote = (props: any) => {
@@ -101,11 +101,11 @@ const CodeBlock = (props: any) => {
 const flatten = (text: any, child: any): any => {
   return typeof child === "string"
     ? text + child
-    : React.Children.toArray(child.props.children).reduce(flatten, text);
+    : Children.toArray(child.props.children).reduce(flatten, text);
 };
 
 const DocsHeading = (props: any) => {
-  var children = React.Children.toArray(props.children);
+  var children = Children.toArray(props.children);
   var text = children.reduce(flatten, "");
   var slug = encodeSlug(text);
 

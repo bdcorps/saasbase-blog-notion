@@ -47,7 +47,7 @@ export default function BlogLayout({
               href: "/logo.png",
             },
           ]}
-        ></NextSeo>
+        />
         <VStack spacing={10} w="full" align="center">
           <HStack w="full" align="flex-start">
             <Container textAlign="left" maxW="container.lg" flex={3}>

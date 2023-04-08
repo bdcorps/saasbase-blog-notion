@@ -1,11 +1,11 @@
+import { Container, SimpleGrid } from "@chakra-ui/react";
+import PostCard from "components/PostCard";
 import type { NextPage } from "next";
-import Head from "next/head";
-import Link from "next/link";
 import { posts } from "../lib/notion";
 
 export async function getServerSideProps() {
   // Get the posts
-  let { results } = await posts();
+  let results = await posts();
   // Return the result
   return {
     props: {
@@ -20,25 +20,13 @@ interface Props {
 
 const Home: NextPage<Props> = (props) => {
   return (
-    <div>
-      <Head>
-        <title>Latest posts</title>
-      </Head>
-
-      <main>
-        {props.posts.map((result, index) => {
-          return (
-            <div key={`key_${index}`}>
-              <Link href={`/posts/${result.id}`}>s</Link>
-            </div>
-          );
+    <Container maxW="container.xl">
+      <SimpleGrid columns={[1, null, 3]} spacing={6} w="full">
+        {props.posts.map((post: any, i: number) => {
+          return <PostCard post={post} key={`post_${i}`} />;
         })}
-      </main>
-
-      <footer>
-        <p>Blog application</p>
-      </footer>
-    </div>
+      </SimpleGrid>
+    </Container>
   );
 };
 

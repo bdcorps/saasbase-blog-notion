@@ -1,4 +1,3 @@
-import { Heading } from "@chakra-ui/react";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { ParsedUrlQuery } from "querystring";
 import ReactMarkdown from "react-markdown";
@@ -13,21 +12,21 @@ interface IParams extends ParsedUrlQuery {
 export const getStaticProps: GetStaticProps = async (ctx) => {
   let { slug } = ctx.params as IParams;
   // Get the dynamic id
-  let page_result = await post(slug);
+  let page = await post(slug);
 
   // Fetch the post
-  let results = await blocks(page_result!.id);
+  let results = await blocks(page!.id);
   // Get the children
   return {
     props: {
       slug,
-      post: page_result,
+      post: page,
       blocks: results,
     },
   };
 };
 export const getStaticPaths: GetStaticPaths = async () => {
-  let { results } = await posts();
+  let results = await posts();
   // Get all posts
   return {
     paths: results.map((post: any) => {
@@ -35,7 +34,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
       return {
         params: {
           // set a params object with an id in it
-          slug: post.properties.slug.rich_text[0].plain_text,
+          slug: post.properties.slug || "",
           id: post.id,
         },
       };
@@ -51,19 +50,18 @@ interface Props {
   blocks: [any];
 }
 
-const Post: NextPage<Props> = ({ id, slug, post, blocks }) => {
+const Post: NextPage<Props> = ({ id, slug, post, blocks }: any) => {
   return (
     <BlogLayout
       frontMatter={{
-        title: post.properties.title.title[0].plain_text,
+        title: post.properties.title,
         publishedAt: "",
         summary: post.properties.summmary,
         tags: [],
       }}
     >
       <>
-        <Heading as="h1">{post.properties.title.title[0].plain_text}</Heading>
-        {blocks.map((block, index) => {
+        {blocks.map((block: any, index: any) => {
           return (
             <ReactMarkdown key={index} components={MDXComponents}>
               {block.parent}

@@ -21,13 +21,50 @@ async function posts() {
     database_id: `${process.env.NOTION_DATABASE}`
   });
 
-  return myPosts;
+  const posts = myPosts.results.map((post: any) => {
+    const id: string = post.id
+    const properties: any = post.properties
+
+    const customProperties: any = {}
+
+    for (const entry of Object.entries(properties)) {
+      const [key, property] = entry as any;
+
+      const date = new Date();
+
+      let day = date.getDate();
+      let month = date.getMonth() + 1;
+      let year = date.getFullYear();
+
+      let currentDate = `${day}-${month}-${year}`;
+
+      if (property.type === "rich_text") {
+        customProperties[key] = (property.rich_text && property.rich_text.length > 0) ? property.rich_text[0].plain_text : ""
+      } else if (property.type === "title") {
+        customProperties[key] = property.title[0].plain_text
+      } else if (property.type === "checkbox") {
+        customProperties[key] = property.checkbox
+      } else if (property.type === "date") {
+        customProperties[key] = property.date?.start || currentDate
+      } else if (property.type === "multi_select") {
+        customProperties[key] = property.multi_select.map((item: any) => item.name)
+      } else {
+        // console.log(entry)
+      }
+    }
+
+    const result = { id, properties: customProperties }
+
+    return result
+  })
+
+  return posts;
 }
 
 async function post(slug: string) {
   const allPosts = await posts();
 
-  const post = allPosts.results.find((post: any) => post.properties.slug.rich_text[0].plain_text === slug);
+  const post = allPosts.find((post: any) => post.properties.slug === slug);
 
   if (!post) {
     return null
@@ -36,7 +73,8 @@ async function post(slug: string) {
   const myPost = await client.pages.retrieve({
     page_id: post.id,
   });
-  return myPost;
+
+  return post;
 }
 
 async function getPage(id: string) {
@@ -55,15 +93,14 @@ async function blocks(id: string) {
     if (block.type !== "paragraph") { return block }
 
     const { rich_text } = block.paragraph;
-    // console.log(rich_text)
 
     const newRichText = await Promise.all(rich_text.map(async (richText: any) => {
       if (richText.text.link && "url" in richText.text.link && richText.text.link.url.startsWith("/") && richText.text.link.url.length === 33) {
         // would be /8846822927f24d548b30a680f03f6110
         const page: any = await getPage(richText.text.link.url.slice(1))
-        richText["text"]["link"]["url"] = "/posts/" + page.properties.slug.rich_text[0].plain_text
+        richText["text"]["link"]["url"] = "/blog/" + page.properties.slug
 
-        richText["href"] = "/posts/" + page.properties.slug.rich_text[0].plain_text
+        richText["href"] = "/blog/" + page.properties.slug
 
         return richText
       }
@@ -75,6 +112,8 @@ async function blocks(id: string) {
   }))
 
   const x = await n2m.blocksToMarkdown(blocks);
+
+  console.log(x)
 
   return x
 }
